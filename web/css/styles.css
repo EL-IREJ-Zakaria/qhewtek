@@ -246,10 +246,16 @@ img {
   gap: 18px;
 }
 
+.reference-grid {
+  display: grid;
+  gap: 18px;
+}
+
 .menu-card,
 .summary-card,
 .cart-item-card,
-.status-card {
+.status-card,
+.reference-card {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -275,6 +281,51 @@ img {
   padding: 18px;
 }
 
+.drinks-reference-panel {
+  padding: 22px;
+}
+
+.reference-card {
+  padding: 20px;
+}
+
+.reference-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.reference-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--surface-muted);
+}
+
+.reference-name {
+  font-weight: 800;
+}
+
+.caffeine-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(184, 111, 68, 0.16);
+  color: var(--secondary);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.reference-action {
+  min-width: 126px;
+  flex-shrink: 0;
+}
+
 .eyebrow {
   color: var(--secondary);
   font-size: 0.82rem;
@@ -286,7 +337,8 @@ img {
 .menu-card h3,
 .summary-card h3,
 .cart-item-card h3,
-.status-card h3 {
+.status-card h3,
+.reference-card h3 {
   margin: 10px 0 6px;
   font-size: 1.05rem;
 }
@@ -506,6 +558,10 @@ img {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .reference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .cart-dock {
     left: 50%;
     right: auto;
@@ -514,8 +570,23 @@ img {
   }
 }
 
+@media (max-width: 480px) {
+  .reference-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reference-action {
+    width: 100%;
+  }
+}
+
 @media (min-width: 992px) {
   .menu-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .reference-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import 'features/drinks/bootstrap/drinks_bootstrap.dart';
 import 'providers/menu_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/theme_provider.dart';
@@ -10,7 +11,9 @@ import 'services/api_service.dart';
 import 'services/menu_service.dart';
 import 'services/order_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DrinksBootstrap.initializeIfSupported();
   runApp(const QhewTekApp());
 }
 

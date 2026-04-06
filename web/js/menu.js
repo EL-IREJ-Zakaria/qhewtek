@@ -1,4 +1,44 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const defaultDrinks = [
+    {
+      category: 'Coffee',
+      drinks: [
+        { name: 'Espresso', caffeine: 212 },
+        { name: 'Cappuccino', caffeine: 40 },
+        { name: 'Latte', caffeine: 32 },
+        { name: 'Americano', caffeine: 47 },
+      ],
+    },
+    {
+      category: 'Tea',
+      drinks: [
+        { name: 'Green Tea', caffeine: 12 },
+        { name: 'Black Tea', caffeine: 20 },
+      ],
+    },
+    {
+      category: 'Energy Drinks',
+      drinks: [
+        { name: 'Red Bull', caffeine: 32 },
+        { name: 'Monster', caffeine: 32 },
+      ],
+    },
+    {
+      category: 'Soft Drinks',
+      drinks: [
+        { name: 'Coca-Cola', caffeine: 10 },
+        { name: 'Pepsi', caffeine: 11 },
+      ],
+    },
+    {
+      category: 'Juice',
+      drinks: [
+        { name: 'Orange Juice', caffeine: 0 },
+        { name: 'Apple Juice', caffeine: 0 },
+      ],
+    },
+  ];
+
   const tableToken = window.QhewTekCommon.getTableToken();
   const state = {
     items: [],
@@ -13,6 +53,75 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pageMessage = document.getElementById('pageMessage');
   const searchInput = document.getElementById('searchInput');
   const categoryFilters = document.getElementById('categoryFilters');
+  const defaultDrinksGrid = document.getElementById('defaultDrinksGrid');
+
+  function formatCaffeine(value) {
+    return value === 0 ? '0 mg caffeine / 100ml' : `${value} mg caffeine / 100ml`;
+  }
+
+  function normalizeName(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '');
+  }
+
+  function findMatchingMenuItem(drink) {
+    return state.items.find((item) => normalizeName(item.name) === normalizeName(drink.name));
+  }
+
+  function renderDefaultDrinks() {
+    if (!defaultDrinksGrid) {
+      return;
+    }
+
+    defaultDrinksGrid.innerHTML = defaultDrinks
+      .map(
+        (group) => `
+          <article class="reference-card">
+            <div class="eyebrow">${window.QhewTekCommon.escapeHtml(group.category)}</div>
+            <h3>${window.QhewTekCommon.escapeHtml(group.category)}</h3>
+            <div class="reference-list">
+              ${group.drinks
+                .map((drink) => {
+                  const matchedItem = findMatchingMenuItem(drink);
+                  return `
+                    <div class="reference-item">
+                      <div>
+                        <div class="reference-name">${window.QhewTekCommon.escapeHtml(drink.name)}</div>
+                        <div class="muted-copy small">${formatCaffeine(drink.caffeine)}</div>
+                      </div>
+                      <button
+                        class="btn ${matchedItem ? 'btn-brand' : 'btn-secondary-soft'} reference-action"
+                        type="button"
+                        ${matchedItem ? `data-default-add="${matchedItem.id}"` : 'disabled'}
+                      >
+                        ${matchedItem ? 'Add to cart' : 'Unavailable'}
+                      </button>
+                    </div>
+                  `
+                })
+                .join('')}
+            </div>
+          </article>
+        `
+      )
+      .join('');
+
+    defaultDrinksGrid.querySelectorAll('[data-default-add]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const itemId = Number(button.getAttribute('data-default-add'));
+        const item = state.items.find((entry) => entry.id === itemId);
+
+        if (!item) {
+          return;
+        }
+
+        window.QhewTekStore.addItem(tableToken, item);
+        updateCartDock();
+        window.QhewTekCommon.showToast(`${item.name} added to cart`);
+      });
+    });
+  }
 
   function setPageError(message) {
     pageMessage.textContent = message;
@@ -111,6 +220,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMenu();
   });
 
+  renderDefaultDrinks();
+
   if (!tableToken) {
     setPageError('This menu is meant to open from a table QR code. Add ?table=TABLE-01 to the URL to simulate a scan.');
     updateCartDock();
@@ -130,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.QhewTekCommon.setElementText('tableBadge', tableLabel);
     renderCategories();
     renderMenu();
+    renderDefaultDrinks();
     updateCartDock();
   } catch (error) {
     setPageError(error.message);
