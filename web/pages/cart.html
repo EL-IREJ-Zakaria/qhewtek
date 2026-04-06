@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cart | QhewTek Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="../css/styles.css" rel="stylesheet" />
+    <script defer src="../js/config.js"></script>
+    <script defer src="../js/common.js"></script>
+    <script defer src="../js/store.js"></script>
+    <script defer src="../js/cart.js"></script>
+  </head>
+  <body class="app-shell">
+    <div class="ambient-blob"></div>
+    <main class="container app-container">
+      <section class="glass-panel hero-panel">
+        <div class="hero-topbar">
+          <div class="brand-lockup">
+            <a class="icon-button d-inline-flex align-items-center justify-content-center" data-table-link="menu.html" href="./menu.html" aria-label="Back to menu">
+              <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+              <div class="eyebrow">Cart Review</div>
+              <div class="display-font fs-4 fw-bold">Your table order</div>
+            </div>
+          </div>
+          <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle color theme">
+            <i data-theme-icon class="bi bi-moon-stars-fill"></i>
+          </button>
+        </div>
+
+        <div class="badge-row">
+          <div class="soft-badge">
+            <i class="bi bi-pin-map-fill"></i>
+            <span id="tableBadge">Waiting for table QR</span>
+          </div>
+          <div class="soft-badge">
+            <i class="bi bi-receipt-cutoff"></i>
+            Review before checkout
+          </div>
+        </div>
+      </section>
+
+      <section class="cart-layout mt-4">
+        <div>
+          <div class="section-heading">
+            <h2 class="fs-4">Items in cart</h2>
+            <span id="cartCountLabel" class="muted-copy">0 items</span>
+          </div>
+          <div id="cartItems" class="d-grid gap-3"></div>
+          <div id="cartEmpty" class="empty-state d-none">
+            <div class="display-font fs-5 fw-bold mb-2">Your cart is empty</div>
+            <div class="mb-3">Add a few items from the menu and come back when you’re ready.</div>
+            <a class="btn btn-brand" data-table-link="menu.html" href="./menu.html">Browse Menu</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <div class="eyebrow">Order Summary</div>
+          <h3>Ready for checkout</h3>
+          <p class="muted-copy">Your selections are linked to the QR code on your table automatically.</p>
+          <div class="d-grid gap-3 mt-4">
+            <div class="d-flex justify-content-between">
+              <span class="muted-copy">Items</span>
+              <strong id="summaryItemCount">0</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="muted-copy">Subtotal</span>
+              <strong id="summaryTotal">$0.00</strong>
+            </div>
+          </div>
+          <hr />
+          <div class="d-grid gap-2">
+            <a class="btn btn-brand" data-table-link="checkout.html" href="./checkout.html">Continue to checkout</a>
+            <a class="btn btn-secondary-soft" data-table-link="menu.html" href="./menu.html">Add more items</a>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>
