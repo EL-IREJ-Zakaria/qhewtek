@@ -1,0 +1,72 @@
+# Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.iml
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+android/app/src/main/gen/
+android/app/src/main/assets/flutter_assets/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+pubspec.lock
+
+# PHP
+vendor/
+composer.lock
+.phpunit.result.cache
+
+# Web
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Database
+*.sql
+!database/schema.sql
+!database/default_drinks_patch.sql
+
+# Uploads (if not committed)
+uploads/
+
+# Temporary files
+tmp/
+temp/
