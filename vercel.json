@@ -27,6 +27,14 @@
     {
       "source": "/js/:path*",
       "destination": "/web/js/:path*"
+    },
+    {
+      "source": "/images/:path*",
+      "destination": "/web/images/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/web/$1"
     }
   ]
 }
