@@ -69,6 +69,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     return state.items.find((item) => normalizeName(item.name) === normalizeName(drink.name));
   }
 
+  function deriveCategories(items) {
+    return [...new Set(items.map((item) => item.category).filter(Boolean))].sort((left, right) =>
+      left.localeCompare(right)
+    );
+  }
+
   function renderDefaultDrinks() {
     if (!defaultDrinksGrid) {
       return;
@@ -230,9 +236,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const response = await window.QhewTekApi.fetchMenu({ tableToken });
-    state.items = response.data.items || [];
-    state.categories = response.data.filters?.categories || [];
-    state.table = response.data.table;
+    const payload = response.data;
+
+    state.items = Array.isArray(payload) ? payload : payload.items || [];
+    state.categories = Array.isArray(payload)
+      ? deriveCategories(state.items)
+      : payload.filters?.categories || deriveCategories(state.items);
+    state.table = Array.isArray(payload) ? null : payload.table || null;
 
     const tableLabel = state.table?.table_number
       ? `Table ${state.table.table_number}`

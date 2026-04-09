@@ -7,34 +7,34 @@
       "maxDuration": 10
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/index.php"
+      "src": "^/api/(.*)",
+      "dest": "/api/index.php"
     },
     {
-      "source": "/",
-      "destination": "/web/index.html"
+      "src": "^/$",
+      "dest": "/web/index.html"
     },
     {
-      "source": "/pages/:path*",
-      "destination": "/web/pages/:path*"
+      "src": "^/pages/(.*)",
+      "dest": "/web/pages/$1"
     },
     {
-      "source": "/css/:path*",
-      "destination": "/web/css/:path*"
+      "src": "^/css/(.*)",
+      "dest": "/web/css/$1"
     },
     {
-      "source": "/js/:path*",
-      "destination": "/web/js/:path*"
+      "src": "^/js/(.*)",
+      "dest": "/web/js/$1"
     },
     {
-      "source": "/images/:path*",
-      "destination": "/web/images/:path*"
+      "src": "^/images/(.*)",
+      "dest": "/web/images/$1"
     },
     {
-      "source": "/(.*)",
-      "destination": "/web/$1"
+      "src": "^(.*)$",
+      "dest": "/web/$1"
     }
   ]
 }
