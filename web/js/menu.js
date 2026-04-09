@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         type="button"
                         ${matchedItem ? `data-default-add="${matchedItem.id}"` : 'disabled'}
                       >
-                        ${matchedItem ? 'Add to cart' : 'Unavailable'}
+                        Ajouter au panier
                       </button>
                     </div>
                   `
@@ -226,13 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderMenu();
   });
 
-  renderDefaultDrinks();
-
-  if (!tableToken) {
-    setPageError('This menu is meant to open from a table QR code. Add ?table=TABLE-01 to the URL to simulate a scan.');
-    updateCartDock();
-    return;
-  }
+  updateCartDock();
 
   try {
     const response = await window.QhewTekApi.fetchMenu({ tableToken });
@@ -246,7 +240,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const tableLabel = state.table?.table_number
       ? `Table ${state.table.table_number}`
-      : `QR ${tableToken}`;
+      : tableToken
+        ? `QR ${tableToken}`
+        : 'Guest menu';
 
     window.QhewTekCommon.setElementText('tableBadge', tableLabel);
     renderCategories();
@@ -255,5 +251,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCartDock();
   } catch (error) {
     setPageError(error.message);
+    renderDefaultDrinks();
   }
 });
