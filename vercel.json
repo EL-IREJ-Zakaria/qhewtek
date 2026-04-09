@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.5.2",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.php"
+    },
+    {
+      "source": "/",
+      "destination": "/web/index.html"
+    },
+    {
+      "source": "/pages/:path*",
+      "destination": "/web/pages/:path*"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "/web/css/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/web/js/:path*"
+    }
+  ]
+}

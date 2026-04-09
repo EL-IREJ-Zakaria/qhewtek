@@ -1,43 +1,24 @@
 # QhewTek Coffee Shop Order Management System
 
-Production-ready starter for a QR-driven coffee shop ordering workflow with:
+QhewTek is a QR-based ordering flow for a coffee shop:
 
-- `database/` MySQL schema and seed data
-- `backend/` PHP 8 REST API using PDO prepared statements and JSON responses
-- `web/` customer-facing mobile-first ordering experience
-- `mobile_flutter/` waiter operations app built with Flutter and Provider
+- `web/` serves the customer menu, cart, and checkout flow
+- `backend/` exposes a PHP 8 JSON API for menu and order management
+- `database/` contains the MySQL schema and seed data
+- `mobile_flutter/` is the waiter-facing Flutter app
+- `docker-compose.yml` brings the site, API, uploads, and MySQL together for deployment
 
-## 1. MySQL Database Schema
+## Project flow
 
-The schema lives in [database/schema.sql](/C:/Users/ellei/Documents/Downloads/qhewtek/database/schema.sql).
+1. A customer scans a QR code and opens `web/pages/menu.html?table=TABLE-01`.
+2. The site loads the live menu from `GET /api/menu?table=TABLE-01`.
+3. Checkout sends the order to `POST /api/order/create`.
+4. The waiter app polls `GET /api/orders`.
+5. New orders appear in the mobile app and can be confirmed or served there.
 
-It creates and seeds:
+This means the site and the mobile app only need to share the same production API base URL.
 
-- `tables`
-- `menu_items`
-- `orders`
-- `order_items`
-
-Highlights:
-
-- `tables.qr_code` is unique and is used by the customer web app to resolve table context
-- `orders.status` supports `pending`, `confirmed`, and `served`
-- `menu_items.available` supports soft-archiving instead of destructive deletes
-- seed data includes 10 tables and a starter menu
-
-## 2. Backend API (PHP 8 + MySQL)
-
-The backend uses a lightweight router plus controllers and models:
-
-- [backend/api/index.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/api/index.php)
-- [backend/router.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/router.php)
-- [backend/controllers/MenuController.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/controllers/MenuController.php)
-- [backend/controllers/OrderController.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/controllers/OrderController.php)
-- [backend/models/MenuItem.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/models/MenuItem.php)
-- [backend/models/Order.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/models/Order.php)
-- [backend/models/Table.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/models/Table.php)
-
-Supported JSON endpoints:
+## API endpoints
 
 - `GET /api/menu`
 - `GET /api/orders`
@@ -48,15 +29,11 @@ Supported JSON endpoints:
 - `POST /api/menu/update`
 - `POST /api/menu/delete`
 
-Behavior notes:
+## Configuration
 
-- `GET /api/menu?table=TABLE-01` resolves the table and returns the live menu
-- `GET /api/menu?include_unavailable=1` exposes archived/unavailable items for the waiter app
-- `POST /api/order/create` recalculates totals on the server from database prices
-- menu add/update endpoints accept `multipart/form-data` for image upload or an `image` URL string
-- menu delete is implemented as soft archive by setting `available = 0`
+### Backend environment variables
 
-Environment variables supported by the backend:
+The backend reads these variables from the environment:
 
 - `APP_URL`
 - `APP_DEBUG`
@@ -66,114 +43,37 @@ Environment variables supported by the backend:
 - `DB_USER`
 - `DB_PASS`
 
-## 3. Customer Web Interface
+The production example file is [`.env.example`](./.env.example).
 
-The customer web app lives under [web/](/C:/Users/ellei/Documents/Downloads/qhewtek/web) and is organized as requested:
+### Web app API base URL
 
-- [web/pages/menu.html](/C:/Users/ellei/Documents/Downloads/qhewtek/web/pages/menu.html)
-- [web/pages/cart.html](/C:/Users/ellei/Documents/Downloads/qhewtek/web/pages/cart.html)
-- [web/pages/checkout.html](/C:/Users/ellei/Documents/Downloads/qhewtek/web/pages/checkout.html)
-- [web/css/styles.css](/C:/Users/ellei/Documents/Downloads/qhewtek/web/css/styles.css)
-- [web/js/menu.js](/C:/Users/ellei/Documents/Downloads/qhewtek/web/js/menu.js)
-- [web/js/cart.js](/C:/Users/ellei/Documents/Downloads/qhewtek/web/js/cart.js)
-- [web/js/checkout.js](/C:/Users/ellei/Documents/Downloads/qhewtek/web/js/checkout.js)
+The web app now behaves like this in [web/js/config.js](./web/js/config.js):
 
-Features included:
+- local dev on `localhost` or port `8081` -> `http://<host>:8000/api`
+- production on the same domain as the site -> `<current-origin>/api`
+- optional override via `window.__QHEWTEK_CONFIG__.apiBaseUrl`
 
-- mobile-first responsive layout
-- menu cards with image, price, category, and add-to-cart actions
-- category filters and menu search
-- localStorage-backed cart per table QR token
-- checkout linked automatically to the table QR code
-- modern glass-card UI with rounded corners, soft shadows, and dark mode
+### Flutter app API base URL
 
-QR flow example:
+The waiter app now supports build-time configuration in [mobile_flutter/lib/services/api_config.dart](./mobile_flutter/lib/services/api_config.dart).
 
-- `http://127.0.0.1:8081/pages/menu.html?table=TABLE-01`
+For production, pass:
 
-## 4. Flutter Waiter Mobile App
-
-The waiter app lives in [mobile_flutter/](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter).
-
-Key files:
-
-- [mobile_flutter/lib/main.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/main.dart)
-- [mobile_flutter/lib/screens/home_shell.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/screens/home_shell.dart)
-- [mobile_flutter/lib/screens/orders_screen.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/screens/orders_screen.dart)
-- [mobile_flutter/lib/screens/menu_management_screen.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/screens/menu_management_screen.dart)
-- [mobile_flutter/lib/providers/order_provider.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/providers/order_provider.dart)
-- [mobile_flutter/lib/providers/menu_provider.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/providers/menu_provider.dart)
-- [mobile_flutter/lib/services/order_service.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/services/order_service.dart)
-- [mobile_flutter/lib/services/menu_service.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/services/menu_service.dart)
-
-Features included:
-
-- live orders screen with polling
-- order status actions: confirm and mark served
-- order status color indicators
-- notification sound via `SystemSound.alert` when new pending orders arrive
-- menu management screen with add, edit, archive, price update, availability toggle, and image upload
-- Provider-based state management and clean service/model separation
-- dark mode toggle
-
-## 5. API Integration
-
-Integration contract across the three layers:
-
-- customer web menu fetches from `GET /api/menu?table={qr_code}`
-- checkout sends `{ table_qr_code, items[] }` to `POST /api/order/create`
-- waiter app polls `GET /api/orders`
-- waiter app sends `POST /api/order/confirm` and `POST /api/order/serve`
-- waiter app menu management uses `GET /api/menu?include_unavailable=1`, `POST /api/menu/add`, `POST /api/menu/update`, and `POST /api/menu/delete`
-
-Config entry points:
-
-- web API base URL: [web/js/config.js](/C:/Users/ellei/Documents/Downloads/qhewtek/web/js/config.js)
-- Flutter API base URL: [mobile_flutter/lib/services/api_config.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/services/api_config.dart)
-- backend DB and app URL config: [backend/config/app.php](/C:/Users/ellei/Documents/Downloads/qhewtek/backend/config/app.php)
-
-## 6. Folder Structure
-
-```text
-qhewtek/
-├── backend/
-│   ├── api/
-│   ├── config/
-│   ├── controllers/
-│   ├── helpers/
-│   ├── models/
-│   ├── uploads/
-│   └── router.php
-├── database/
-│   └── schema.sql
-├── mobile_flutter/
-│   ├── android/
-│   ├── ios/
-│   ├── lib/
-│   │   ├── models/
-│   │   ├── providers/
-│   │   ├── screens/
-│   │   ├── services/
-│   │   └── widgets/
-│   └── test/
-├── web/
-│   ├── css/
-│   ├── js/
-│   ├── pages/
-│   └── index.html
-└── README.md
+```powershell
+--dart-define=API_BASE_URL=https://your-domain.com/api
 ```
 
-## 7. Run Locally
+If `API_BASE_URL` is not provided, the app keeps the current local-development defaults.
 
-### Database
+## Run locally
 
-1. Create the database by importing [database/schema.sql](/C:/Users/ellei/Documents/Downloads/qhewtek/database/schema.sql) into MySQL.
-2. Confirm the database name is `coffee_shop_order_management`.
+### 1. Database
 
-### Backend
+Import [database/schema.sql](./database/schema.sql) into MySQL and make sure the database name is `coffee_shop_order_management`.
 
-1. Set database credentials and URL as environment variables if needed:
+### 2. Backend
+
+Set environment variables if needed:
 
 ```powershell
 $env:APP_URL="http://127.0.0.1:8000"
@@ -184,53 +84,149 @@ $env:DB_USER="root"
 $env:DB_PASS=""
 ```
 
-2. Start the PHP API from the project root:
+Start the API:
 
 ```powershell
 php -S 127.0.0.1:8000 -t backend backend/router.php
 ```
 
-### Customer Web App
+### 3. Customer web app
 
-1. Start a simple static server:
+Start the static site:
 
 ```powershell
 php -S 127.0.0.1:8081 -t web
 ```
 
-2. Open a QR-style menu URL in the browser:
+Open:
 
 ```text
 http://127.0.0.1:8081/pages/menu.html?table=TABLE-01
 ```
 
-3. Use one of the seeded QR codes:
+### 4. Waiter mobile app
 
-- `TABLE-01`
-- `TABLE-02`
-- `TABLE-03`
-- `TABLE-04`
-- `TABLE-05`
-
-### Flutter Waiter App
-
-1. From [mobile_flutter/](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter):
+From [mobile_flutter/](./mobile_flutter):
 
 ```powershell
 flutter pub get
 flutter run
 ```
 
-2. If you run on:
+For a physical device on the same LAN:
 
-- Android emulator: default config already points to `http://10.0.2.2:8000/api`
-- iOS simulator, desktop, or Flutter web: update [mobile_flutter/lib/services/api_config.dart](/C:/Users/ellei/Documents/Downloads/qhewtek/mobile_flutter/lib/services/api_config.dart) if your backend host differs
-- physical device: replace localhost with your machine’s LAN IP in both the Flutter and web config files
+```powershell
+flutter run --dart-define=API_BASE_URL=http://YOUR_COMPUTER_IP:8000/api
+```
 
-## Verification
+## Production deployment with Docker
 
-Completed locally:
+This repository now includes a single-server deployment layout:
 
-- PHP syntax check on all backend files
-- `flutter analyze`
-- `flutter test`
+- `web` container: Nginx serves the static site and public uploads
+- `app` container: PHP-FPM runs the API
+- `db` container: MySQL stores tables, menu items, orders, and order items
+
+Files involved:
+
+- [docker-compose.yml](./docker-compose.yml)
+- [deploy/nginx/default.conf](./deploy/nginx/default.conf)
+- [deploy/nginx/Dockerfile](./deploy/nginx/Dockerfile)
+- [deploy/php/Dockerfile](./deploy/php/Dockerfile)
+- [deploy/php/entrypoint.sh](./deploy/php/entrypoint.sh)
+
+### 1. Prepare the server
+
+On your VPS:
+
+1. Install Docker and Docker Compose.
+2. Clone this repository.
+3. Copy `.env.example` to `.env`.
+4. Set `APP_URL` to your public domain or server IP.
+5. Change `DB_PASS` and `MYSQL_ROOT_PASSWORD`.
+
+Example:
+
+```dotenv
+APP_URL=http://YOUR_SERVER_IP
+APP_DEBUG=false
+DB_NAME=coffee_shop_order_management
+DB_USER=qhewtek
+DB_PASS=strong-db-password
+MYSQL_ROOT_PASSWORD=strong-root-password
+WEB_PORT=80
+```
+
+### 2. Start everything
+
+Run from the project root:
+
+```powershell
+docker compose up -d --build
+```
+
+This starts:
+
+- the customer site on port `80`
+- the API on the same public host under `/api`
+- uploaded menu images under `/uploads/menu/...`
+- MySQL with the seed schema loaded on first boot
+
+### 3. Test the production API
+
+Open these URLs in the browser:
+
+```text
+http://YOUR_SERVER_IP/
+http://YOUR_SERVER_IP/pages/menu.html?table=TABLE-01
+http://YOUR_SERVER_IP/api/menu?table=TABLE-01
+```
+
+If the menu loads in the browser, the waiter app will be able to see new orders from the same backend.
+
+### 4. Connect the Flutter app to production
+
+For Android, desktop, or test devices:
+
+```powershell
+flutter run --dart-define=API_BASE_URL=http://YOUR_SERVER_IP/api
+```
+
+For release builds:
+
+```powershell
+flutter build apk --release --dart-define=API_BASE_URL=http://YOUR_SERVER_IP/api
+```
+
+If you later attach a domain and TLS, switch the value to:
+
+```powershell
+--dart-define=API_BASE_URL=https://your-domain.com/api
+```
+
+## Important production notes
+
+- The old hard-coded fallback DB credentials were removed from [backend/config/app.php](./backend/config/app.php). Use environment variables instead.
+- The API already sends CORS headers from [backend/helpers/Response.php](./backend/helpers/Response.php), so you can still split frontend and backend later if needed.
+- Uploaded menu images are persisted in a Docker volume shared between the PHP and Nginx containers.
+- The mobile app polls the API, so new orders from the website should appear automatically as long as both point to the same backend.
+
+## Mobile app quick notes
+
+See [mobile_flutter/README.md](./mobile_flutter/README.md) for the app-specific commands.
+
+## Vercel deployment notes
+
+This repo can be deployed to Vercel with:
+
+- static frontend routing from [vercel.json](./vercel.json)
+- a PHP API entrypoint at [api/index.php](./api/index.php)
+- the community PHP runtime `vercel-php@0.5.2`
+
+Important constraints:
+
+- Vercel PHP runs via a community runtime, not an official Vercel PHP runtime.
+- The API still requires an external MySQL-compatible database through `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASS`.
+- Local filesystem uploads are not durable on Vercel. Menu image upload should use image URLs unless you add external object storage.
+
+For the site -> mobile app flow, the critical requirement is that both the website and the Flutter app point to the same public `/api` base URL.

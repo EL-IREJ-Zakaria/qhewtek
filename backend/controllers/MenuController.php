@@ -155,6 +155,13 @@ class MenuController
 
     private function storeUploadedImage(array $file): string
     {
+        if (getenv('VERCEL') || getenv('VERCEL_ENV')) {
+            Response::error(
+                'Direct file uploads are not supported by this deployment. Use an image URL or external object storage.',
+                422
+            );
+        }
+
         if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
             Response::error('Image upload failed.', 422);
         }
